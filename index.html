@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Happy Birthday, Lux! 💜</title>
+<!--
+  FOLDER SETUP: keep this index.html next to your photos and videos (.mp4 works best).
+  Then edit ONLY the "EDIT HERE" block at the top of the <script> at the bottom of this file.
+-->
+<style>
+:root{--lav:#e9defa;--lilac:#c9b1ef;--violet:#8f6bd1;--plum:#4a2a6b;--deep:#2f1a47;--cream:#fbf6ee;--paper:#fffaf2;
+  --serif:"Cormorant Garamond","Palatino Linotype",Palatino,Georgia,serif;
+  --hand:"Segoe Script","Bradley Hand","Snell Roundhand","Brush Script MT","Comic Sans MS",cursive}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:var(--serif);color:var(--plum);font-size:1.12rem;line-height:1.6;overflow:hidden;
+  background:radial-gradient(circle at 20% 10%,#f3eaff,transparent 50%),linear-gradient(160deg,var(--lav),#d9c6f5 60%,var(--lilac))}
+svg.i{display:block}.hand{font-family:var(--hand)}
+
+/* petals */
+#petals{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+.petal{position:absolute;top:-30px;width:14px;height:18px;background:linear-gradient(135deg,var(--lilac),var(--violet));border-radius:150% 0 150% 0;opacity:.55;animation:fall linear infinite}
+@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(540deg)}}
+
+/* book */
+#stage{position:fixed;inset:0;display:grid;place-items:center;padding:max(.8rem,env(safe-area-inset-top)) .8rem 4.6rem;perspective:1800px}
+#book{position:relative;width:min(100%,780px);height:min(100%,880px);border-radius:10px 18px 18px 10px;
+  background:var(--paper);box-shadow:0 30px 60px rgba(47,26,71,.35),inset 14px 0 18px -10px rgba(74,42,107,.3);animation:rise 1.2s both}
+#book::before{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;border-radius:10px 0 0 10px;z-index:3;
+  background:repeating-linear-gradient(90deg,#4a2a6b 0 4px,#6b4396 4px 8px);opacity:.9}
+@keyframes rise{from{opacity:0;transform:translateY(30px)}}
+.page{position:absolute;inset:0;display:none;overflow-y:auto;overflow-x:hidden;padding:2.4rem 1.4rem 2rem 2.6rem;border-radius:inherit;
+  transform-origin:left center;background:var(--paper);-webkit-overflow-scrolling:touch}
+.page.on{display:block}
+.page.inN{animation:inN .8s both}.page.inP{animation:inP .8s both}
+.page.outN{display:block;animation:outN .8s both;z-index:2}.page.outP{display:block;animation:outP .8s both}
+@keyframes inN{from{opacity:0;transform:translateX(30px)}}
+@keyframes inP{from{opacity:0;transform:translateX(-30px)}}
+@keyframes outN{to{opacity:0;transform:rotateY(-80deg);filter:brightness(.8)}}
+@keyframes outP{to{opacity:0;transform:translateX(40px)}}
+h2{font-weight:500;font-style:italic;font-size:clamp(1.7rem,5vw,2.5rem);text-align:center;line-height:1.2}
+.sub{font-family:var(--hand);color:var(--violet);text-align:center;margin:.3rem 0 1.6rem;font-size:1rem}
+.pgn{position:absolute;bottom:.5rem;right:1.2rem;font-family:var(--hand);font-size:.85rem;color:var(--lilac)}
+
+/* nav */
+#nav{position:fixed;left:0;right:0;bottom:max(.8rem,env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:center;gap:.9rem;z-index:20}
+.rb{width:46px;height:46px;border-radius:50%;border:0;cursor:pointer;color:#fff;font-size:1.3rem;background:linear-gradient(135deg,var(--violet),var(--plum));box-shadow:0 6px 16px rgba(74,42,107,.35);transition:transform .2s,opacity .2s}
+.rb:hover{transform:scale(1.1)}.rb:disabled{opacity:.3;cursor:default;transform:none}
+#dots{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:55vw}
+#dots i{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.7);cursor:pointer;transition:.3s}
+#dots i.on{background:var(--plum);transform:scale(1.4)}
+#music{position:fixed;top:max(.8rem,env(safe-area-inset-top));right:.8rem;z-index:20;width:auto;height:42px;padding:0 1rem;font:inherit;font-family:var(--hand);font-size:.9rem;border-radius:999px}
+button:focus-visible,#dots i:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+.btn{font-family:var(--hand);font-size:1.05rem;border:0;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--violet),var(--plum));padding:.85rem 1.9rem;border-radius:999px;box-shadow:0 8px 22px rgba(74,42,107,.3);transition:transform .25s}
+.btn:hover{transform:translateY(-3px) scale(1.04)}
+
+/* cover */
+.cover{display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:1.5rem 1.2rem 1.5rem 2.2rem;
+  background:radial-gradient(circle at 50% 25%,#7a52b3,var(--deep) 75%);color:#f6edff;overflow:hidden}
+.cover.on{display:flex}
+.cover h1{font-weight:500;font-style:italic;font-size:clamp(2.2rem,8vw,4.2rem);line-height:1.1;animation:rise 1.4s .3s both}
+.cover p{font-family:var(--hand);color:var(--lilac);margin:.8rem 0 1.4rem;animation:rise 1.4s .6s both}
+.cover .btn{background:linear-gradient(135deg,#e7d5ff,#b99be8);color:var(--deep);animation:rise 1.4s .9s both}
+.cover .frame{position:absolute;inset:14px 14px 14px 26px;border:1px solid rgba(233,222,250,.4);border-radius:8px;pointer-events:none}
+.bq{display:flex;align-items:flex-end;gap:.1rem;margin-top:1.6rem;animation:rise 1.6s .9s both}
+.bq .t{width:clamp(40px,9vw,64px);height:clamp(82px,18vw,130px);transform-origin:50% 100%;animation:sway 5s ease-in-out infinite}
+.bq .t:nth-child(2){height:clamp(100px,22vw,160px);animation-delay:-1.5s}.bq .t:nth-child(3){animation-delay:-3s}
+.bq .t:nth-child(4){height:clamp(95px,20vw,145px);animation-delay:-4s}
+@keyframes sway{50%{transform:rotate(3deg)}}
+.ca{position:absolute;opacity:.92}
+.ca.g{left:7%;bottom:7%;width:clamp(36px,9vw,70px);transform:rotate(-15deg)}.ca.p{right:7%;bottom:9%;width:clamp(32px,8vw,60px);transform:rotate(10deg)}
+.ca.b{right:8%;top:8%;width:clamp(56px,12vw,100px);transform:rotate(8deg)}.ca.n{left:9%;top:10%;width:30px;color:var(--lilac);animation:sway 4s infinite}
+
+/* gallery */
+.cols{columns:2 190px;column-gap:1.3rem}
+.polaroid{break-inside:avoid;margin:0 0 1.7rem;background:#fff;padding:.6rem .6rem .8rem;position:relative;border-radius:3px;
+  box-shadow:0 5px 14px rgba(74,42,107,.2);transform:rotate(var(--r));transition:transform .35s,box-shadow .35s}
+.polaroid:hover{transform:rotate(0) scale(1.04);box-shadow:0 12px 26px rgba(74,42,107,.3);z-index:2}
+.polaroid img{width:100%;height:auto;display:block;border-radius:2px}
+.polaroid figcaption{font-family:var(--hand);font-size:.9rem;text-align:center;margin-top:.55rem;color:var(--violet)}
+.polaroid::before{content:"";position:absolute;top:-11px;left:50%;width:74px;height:22px;transform:translateX(-50%) rotate(var(--tr));background:rgba(201,177,239,.65);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.polaroid .st{position:absolute;right:-6px;bottom:-10px;font-size:1.4rem}
+.empty{text-align:center;font-family:var(--hand);color:var(--violet);padding:1.6rem;border:2px dashed var(--lilac);border-radius:14px}
+
+/* video */
+.vbox{max-width:620px;margin:0 auto;background:#fff;padding:.8rem;border-radius:5px;box-shadow:0 8px 22px rgba(74,42,107,.22);transform:rotate(-1deg);position:relative}
+.vbox::before{content:"";position:absolute;top:-12px;left:50%;width:90px;height:24px;transform:translateX(-50%) rotate(3deg);background:rgba(201,177,239,.65)}
+.vwrap{position:relative;aspect-ratio:16/9;border-radius:3px;overflow:hidden;background:#1b0f2b}
+.vwrap video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.vcov{position:absolute;inset:0;border:0;cursor:pointer;display:grid;place-items:center;z-index:2;transition:opacity .4s;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.35),transparent 50%),linear-gradient(135deg,#d9c6f5,#8f6bd1)}
+.vcov.hide{opacity:0;pointer-events:none}
+.vcov .play{width:70px;height:70px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 8px 20px rgba(47,26,71,.3);transition:transform .25s}
+.vcov:hover .play{transform:scale(1.1)}
+.vcov .play::after{content:"";margin-left:6px;border-left:21px solid var(--violet);border-top:12px solid transparent;border-bottom:12px solid transparent}
+.vcov svg{position:absolute;left:10%;bottom:6%;height:85px}
+.verr{display:none;font-family:var(--hand);font-size:.9rem;color:var(--violet);text-align:center;margin-top:.6rem}
+.cap{font-family:var(--hand);text-align:center;margin-top:1.2rem;color:var(--violet)}
+
+/* letter */
+.lined{background:repeating-linear-gradient(transparent 0 31px,rgba(143,107,209,.17) 31px 32px),var(--paper)}
+.lined::after{content:"";position:absolute;left:3.6rem;top:0;bottom:0;width:1px;background:rgba(220,120,150,.35);pointer-events:none}
+.msg{font-family:var(--hand);font-size:1.05rem;line-height:32px;padding-left:1.6rem;max-width:560px;margin:auto}
+.msg p{margin-bottom:32px}
+.lc{position:absolute;pointer-events:none}.lc.a{right:6px;top:6px;width:52px;transform:rotate(14deg)}.lc.b{right:10px;bottom:30px;width:80px;transform:rotate(-6deg);opacity:.9}
+
+/* things */
+.things{display:flex;flex-wrap:wrap;justify-content:center;gap:1.4rem 1.6rem}
+.sticker{appearance:none;border:0;font:inherit;color:inherit;cursor:pointer;background:#fff;width:128px;padding:.9rem .6rem .7rem;border-radius:50% 50% 46% 46%/40% 40% 50% 50%;
+  box-shadow:0 6px 16px rgba(74,42,107,.2);text-align:center;transform:rotate(var(--r));transition:transform .3s}
+.sticker:hover{transform:rotate(0) translateY(-6px) scale(1.07)}
+.sticker svg{width:54px;height:68px;margin:0 auto}.sticker b{display:block;font-family:var(--hand);font-weight:400;font-size:.9rem;margin-top:.3rem}
+#bubble{min-height:3.6rem;text-align:center;font-family:var(--hand);color:var(--violet);margin-top:1.5rem;transition:opacity .4s}
+
+/* surprise / final */
+.ctr{text-align:center}
+.note{position:relative;max-width:480px;margin:1.6rem auto 0;background:#f4ebff;border-radius:6px;padding:0 1.5rem;max-height:0;opacity:0;transform:scale(.6) rotate(-4deg);overflow:hidden;
+  transition:max-height 1.2s,opacity 1s,transform 1.2s cubic-bezier(.2,.8,.2,1),padding 1s;box-shadow:0 10px 26px rgba(74,42,107,.25)}
+.note.open{max-height:600px;opacity:1;transform:none;padding:1.8rem 1.5rem}
+.note p{font-family:var(--hand);color:var(--plum);line-height:1.9;white-space:pre-line}
+.secret-picture{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;max-width:520px;max-height:520px;margin:1.2rem auto 0;overflow:hidden}
+.secret-picture img{display:block;width:100%;height:auto;max-height:42vh;object-fit:contain;border-radius:6px;box-shadow:0 8px 22px rgba(74,42,107,.22)}
+.spark{position:fixed;pointer-events:none;z-index:60;font-size:1.3rem;animation:pop 1.6s ease-out forwards}
+@keyframes pop{from{opacity:1;transform:scale(.4)}to{opacity:0;transform:translate(var(--x),var(--y)) scale(1.3)}}
+.row{display:flex;justify-content:center;align-items:flex-end;gap:1rem;margin:1rem 0}
+.row .t{width:46px;height:92px}.row .pf{width:52px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}#petals{display:none}}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="tulip" viewBox="0 0 60 120"><path d="M30 55V118" stroke="#7a9a6a" stroke-width="4" fill="none"/><path d="M30 118C30 95 8 90 6 70C18 76 28 90 30 100Z" fill="#8fae7e"/><path d="M30 105C32 90 50 86 54 66C42 72 32 88 30 100Z" fill="#7a9a6a"/><path d="M12 22C12 40 20 56 30 58C40 56 48 40 48 22C42 28 36 18 30 10C24 18 18 28 12 22Z" fill="#9b6fd0"/><path d="M30 10C24 22 22 44 30 58C38 44 36 22 30 10Z" fill="#b794e8"/></symbol>
+<symbol id="books" viewBox="0 0 100 80"><rect x="8" y="54" width="84" height="18" rx="3" fill="#8f6bd1"/><rect x="8" y="62" width="84" height="3" fill="#fbf6ee" opacity=".7"/><rect x="16" y="36" width="72" height="18" rx="3" fill="#c9b1ef"/><rect x="16" y="44" width="72" height="3" fill="#fbf6ee" opacity=".8"/><rect x="12" y="19" width="66" height="17" rx="3" fill="#4a2a6b"/><rect x="12" y="26" width="66" height="3" fill="#e9defa" opacity=".7"/><path d="M60 19c0-8 6-12 14-10l-4 10z" fill="#e58fb0"/></symbol>
+<symbol id="guitar" viewBox="0 0 60 150"><rect x="26" y="4" width="8" height="26" rx="2" fill="#4a2a6b"/><rect x="27" y="28" width="6" height="52" fill="#8a5a3a"/><path d="M30 70c-10 0-14 8-14 15 0 5 3 8 3 11 0 4-9 8-9 22 0 12 9 22 20 22s20-10 20-22c0-14-9-18-9-22 0-3 3-6 3-11 0-7-4-15-14-15z" fill="#d9a46b"/><circle cx="30" cy="106" r="7" fill="#4a2a6b"/><rect x="22" y="128" width="16" height="4" rx="2" fill="#4a2a6b"/><path d="M30 6v122" stroke="#fff" stroke-width=".7" opacity=".8"/></symbol>
+<symbol id="perfume" viewBox="0 0 60 90"><rect x="22" y="2" width="16" height="14" rx="3" fill="#8f6bd1"/><rect x="26" y="14" width="8" height="8" fill="#c9b1ef"/><rect x="6" y="22" width="48" height="62" rx="14" fill="#e3d2fa" stroke="#8f6bd1" stroke-width="2"/><path d="M14 34c0 14 0 26 4 40" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none" opacity=".8"/><path d="M30 70c-8-6-8-14 0-10 8-4 8 4 0 10z" fill="#8f6bd1" opacity=".7"/></symbol>
+<symbol id="heart" viewBox="0 0 60 60"><path d="M30 54C6 36 4 16 16 10c8-4 13 1 14 6 1-5 6-10 14-6 12 6 10 26-14 44z" fill="#a37be0"/><path d="M16 18c2-4 6-4 8 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" opacity=".7"/></symbol>
+<symbol id="noteIcon" viewBox="0 0 40 60"><path d="M14 44V8l20 6v30" stroke="currentColor" stroke-width="3" fill="none"/><ellipse cx="10" cy="46" rx="8" ry="6" fill="currentColor"/><ellipse cx="30" cy="44" rx="8" ry="6" fill="currentColor"/></symbol>
+</defs></svg>
+
+<div id="petals" aria-hidden="true"></div>
+<button class="rb" id="music" aria-pressed="false">♪ Music: off</button>
+<div id="stage"><div id="book"></div></div>
+<div id="nav">
+  <button class="rb" id="prev" aria-label="Previous page">‹</button>
+  <div id="dots"></div>
+  <button class="rb" id="next" aria-label="Next page">›</button>
+</div>
+<audio id="song" loop preload="auto"></audio>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   ✎ EDIT HERE — everything you need to change is in this block
+   ═══════════════════════════════════════════════════════════ */
+
+/* ① PHOTOS — add one line per picture (put files in the "images" folder).
+   Add as many as you like: the book makes new gallery pages automatically.
+   caption and sticker are optional. Photos are never cropped. */
+const PHOTOS = [
+  { src: "Photo1.jpg" },
+  { src: "Photo2.png" },
+  { src: "Photo3.jpg" },
+];
+const PHOTOS_PER_PAGE = 4;   // how many photos on each gallery page
+
+/* ② VIDEOS — exactly two, each gets its own page. Put files in "videos". (.mp4 / H.264 plays everywhere)
+   poster = optional thumbnail image path, or "" for the purple play-button cover. */
+const VIDEOS = [
+  { title: "V1", src: "V1.mp4", poster: "" },
+  { title: "V2", src: "V2.mp4", poster: "" }
+];
+
+/* ③ MUSIC — by default the book plays a gentle "Happy Birthday" tune it makes by itself (no file needed).
+   To use your own song instead, put it in a "music" folder and set the path, e.g. "music/song.mp3" */
+const MUSIC_FILE = "";
+
+/* ④ MESSAGES — each line in LETTER is one paragraph */
+const LETTER = [
+  "Happy birthday, Singkit! ❤️ I hope ma-appreciate mo itong simple presentation and the little effort I put into making it. Sana, in some way, maging reminder din ito na you deserve to enjoy your special day.",
+  "I know and understand why you don't usually celebrate your birthday, and I respect that. But I still hope na kahit papaano, ma-enjoy mo ang araw na 'to and allow yourself to feel a little extra special today.",
+  "You deserve that, Singkit. Hehe! Happy birthday ulit! ❤️",
+  "Your manok, Heyhey"
+];
+const SECRET = `Psst, Lux. 💜 This is the little secret part, a space for something I want you to know and something I hope will make your day a little more special. Although parang nasabi ko na ata lahat? HAHAHAHA!
+
+Enjoyin mo na lang ang araw na 'to, Singkit! I hope you continue finding the things and places that make you feel comfortable and at peace. And sana mahanap mo na rin yung comfort zone mo, if you haven't found it yet.
+
+And lastly, PINAKAIMPORTANTENG BAGAY... ITAGAY MO KO MAMAYA HAHAHAHAHA! Biro lang! 😭
+
+Happy birthday ulit, Singkit! Enjoy your day! 💜`;
+const FINAL  = "May your year be soft, bright, and full of flowers, good books, and songs that feel like home. I'm so glad you exist.";
+const THINGS = [   // notes that pop up when Lux taps each sticker
+  { icon: "heart",   w: 60,  h: 60,  label: "Purple",        note: "Your favorite color. A little detail about you that makes even the simplest things feel a little brighter. 💜" },
+  { icon: "books",   w: 100, h: 80,  label: "Books",         note: "Every book you read holds a little piece of your world. I guess that's one way I get to know you more, even through the stories you love. 📖" },
+  { icon: "tulip",   w: 60,  h: 120, label: "Purple Tulips", note: "Soft, simple, and quietly brave, just like you. A little reminder that even the gentlest things can hold so much strength and beauty. 🌷" },
+  { icon: "guitar",  w: 60,  h: 150, label: "My Guitar",     note: "Every string has its own sound, just like every little part of you has something beautiful to say. Somehow, guitars remind me that some feelings are better expressed through melodies than words. 🎸" },
+  { icon: "perfume", w: 60,  h: 90,  label: "Perfumes",      note: "Perfume is a memory you can wear. I hope this day leaves you with a beautiful scent of happiness and memories worth keeping. ✨" }
+];
+/* ═══════════════ end of editable block ═══════════════ */
+
+const $ = (s, el = document) => el.querySelector(s);
+const ic = (id, vb, cls = "") => `<svg class="i ${cls}" viewBox="0 0 ${vb}"><use href="#${id}"/></svg>`;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---------- build pages ---------- */
+const pages = [];
+pages.push({ cover: true, html: `<div class="frame"></div>
+  ${ic("noteIcon","40 60","ca n")}${ic("books","100 80","ca b")}${ic("guitar","60 150","ca g")}${ic("perfume","60 90","ca p")}
+  <h1>Happy Birthday, Lux! 💜</h1><p>A little corner of the internet made just for you.</p>
+  <button class="btn" id="openBtn">Open Your Birthday Surprise</button>
+  <div class="bq" aria-hidden="true">${ic("tulip","60 120","t").repeat(4)}</div>` });
+
+if (!PHOTOS.length) pages.push({ html: `<h2>Our Little Memories</h2><div class="sub">pressed between the pages ✿</div><div class="empty">Your photos will appear here ✿<br>Add file paths to the PHOTOS list in the code.</div>` });
+for (let i = 0; i < PHOTOS.length; i += PHOTOS_PER_PAGE) {
+  const chunk = PHOTOS.slice(i, i + PHOTOS_PER_PAGE).map((p, j) => {
+    const k = i + j;
+    return `<figure class="polaroid" style="--r:${((k % 5) - 2) * 1.4}deg;--tr:${((k % 3) - 1) * 6}deg">
+      <img src="${esc(p.src)}" alt="${esc(p.caption || "A memory")}" loading="lazy" decoding="async" onerror="this.parentNode.innerHTML='<div class=empty>Couldn\\'t find<br>'+this.getAttribute('src')+'</div>'">
+      ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}${p.sticker ? `<span class="st">${esc(p.sticker)}</span>` : ""}</figure>`;
+  }).join("");
+  pages.push({ html: `<h2>Our Little Memories</h2><div class="sub">pressed between the pages ✿</div><div class="cols">${chunk}</div>` });
+}
+VIDEOS.forEach((v, n) => pages.push({ html: `<h2>${esc(v.title)}</h2><div class="sub">Press it play</div>
+  <div class="vbox"><div class="vwrap"><video controls playsinline preload="metadata" src="${esc(v.src)}" ${v.poster ? `poster="${esc(v.poster)}"` : ""}></video>
+  <button class="vcov" aria-label="Play ${esc(v.title)}" ${v.poster ? `style="background:center/cover url('${esc(v.poster)}')"` : ""}>${ic("tulip","60 120")}<span class="play"></span></button></div>
+  <div class="verr" role="status" aria-live="polite"></div></div>
+  <div class="cap">${n ? "papacute talaga sya AHAHHA✿" : "Pa cute man sya, HAHA ✿"}</div>` }));
+
+pages.push({ cls: "lined", html: `${ic("tulip","60 120","lc a")}${ic("books","100 80","lc b")}<h2>A Letter for You</h2><div class="sub">written with a warm cup of tea</div>
+  <div class="msg">${LETTER.map(t => `<p>${esc(t)}</p>`).join("")}</div>` });
+
+pages.push({ html: `<h2>Little Things That Remind Me of You</h2><div class="sub">tap a sticker ✿</div><div class="things">
+  ${THINGS.map((t, i) => `<button class="sticker" style="--r:${(i % 2 ? 4 : -4)}deg" data-note="${esc(t.note)}">${ic(t.icon, t.w + " " + t.h)}<b>${esc(t.label)}</b></button>`).join("")}</div>
+  <div id="bubble" aria-live="polite"></div>` });
+
+pages.push({ cls: "ctr", html: `<h2>A Secret, Just for You</h2><div class="sub">there's something folded up in here…</div>
+  <button class="btn" id="secretBtn">Unfold the secret note</button>
+  <div class="secret-picture" id="secretPicture" hidden>
+    <img src="Photo4.png" alt="I know I won't see you, but happy birthday">
+    <img src="chicken-cluck.gif" alt="Animated chicken saying hey hey">
+  </div>
+  <div class="note" id="note"><p>${esc(SECRET)}</p></div>` });
+
+pages.push({ cls: "ctr", html: `<div class="row" aria-hidden="true">${ic("tulip","60 120","t")}${ic("perfume","60 90","pf")}${ic("tulip","60 120","t")}</div>
+  <h2>Happy Birthday, Lux 💜</h2><div class="sub">the last page, and the first of your year</div><p class="hand" style="max-width:480px;margin:auto">${esc(FINAL)}</p>
+  <div class="row" aria-hidden="true">${ic("books","100 80","pf")}${ic("guitar","60 150","t")}</div>
+  <button class="btn" id="againBtn" style="margin-top:1rem">Back to the cover</button>` });
+
+const book = $("#book"), dots = $("#dots");
+pages.forEach((p, i) => {
+  const d = document.createElement("section");
+  d.className = "page " + (p.cover ? "cover " : "") + (p.cls || "");
+  d.innerHTML = p.html + (p.cover ? "" : `<span class="pgn">${i} / ${pages.length - 1}</span>`);
+  book.appendChild(d);
+  const dot = document.createElement("i");
+  dot.tabIndex = 0; dot.setAttribute("aria-label", "Go to page " + (i + 1));
+  dot.onclick = () => go(i); dot.onkeydown = e => { if (e.key === "Enter") go(i); };
+  dots.appendChild(dot);
+});
+const els = [...book.children], dts = [...dots.children];
+
+/* ---------- page turning ---------- */
+let cur = 0, busy = false;
+function go(n) {
+  if (busy || n === cur || n < 0 || n >= pages.length) return;
+  const dir = n > cur ? "N" : "P", old = els[cur], nw = els[n];
+  els.forEach(e => $("video", e) && $("video", e).pause());
+  busy = true; old.classList.remove("on"); old.classList.add("out" + dir);
+  nw.classList.add("on", "in" + dir);
+  setTimeout(() => { old.classList.remove("out" + dir); nw.classList.remove("in" + dir); busy = false; }, 820);
+  nw.scrollTop = 0; cur = n; sync();
+}
+function sync() {
+  dts.forEach((d, i) => d.classList.toggle("on", i === cur));
+  $("#prev").disabled = cur === 0; $("#next").disabled = cur === pages.length - 1;
+}
+els[0].classList.add("on"); sync();
+$("#prev").onclick = () => go(cur - 1); $("#next").onclick = () => go(cur + 1);
+addEventListener("keydown", e => { if (e.key === "ArrowRight") go(cur + 1); if (e.key === "ArrowLeft") go(cur - 1); });
+let sx = null, sy = 0;
+book.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+book.addEventListener("touchend", e => {
+  if (sx === null || e.target.closest("video")) return;
+  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1)); sx = null;
+});
+
+/* ---------- interactions ---------- */
+$("#openBtn").onclick = e => { sparkle(e.clientX, e.clientY, "💜", 12); setMusic(true); go(1); };
+$("#againBtn").onclick = () => go(0);
+document.querySelectorAll(".page").forEach(pg => { const c = $(".vcov", pg); if (!c) return; const v = $("video", pg);
+  c.onclick = () => {
+    c.classList.add("hide");
+    v.play().catch(() => {
+      c.classList.remove("hide");
+      $(".verr", pg).textContent = `Couldn't play ${v.getAttribute("src")}. Try opening this page in a browser and check that the video is a supported MP4.`;
+      $(".verr", pg).style.display = "block";
+    });
+  };
+  v.onerror = () => {
+    $(".verr", pg).textContent = `Couldn't load ${v.getAttribute("src")}. Check that the video file is beside index.html and is a browser-compatible MP4.`;
+    $(".verr", pg).style.display = "block";
+  };
+});
+const bubble = $("#bubble");
+document.querySelectorAll(".sticker").forEach(s => s.onclick = e => {
+  bubble.style.opacity = 0; setTimeout(() => { bubble.textContent = s.dataset.note; bubble.style.opacity = 1; }, 180); sparkle(e.clientX, e.clientY, "✨");
+});
+$("#secretBtn").onclick = e => {
+  const open = $("#note").classList.toggle("open"); e.target.textContent = open ? "Fold it back up" : "Unfold the secret note";
+  $("#secretPicture").hidden = !open;
+  if (open) sparkle(innerWidth / 2, innerHeight / 2, "💜", 16);
+};
+function sparkle(x, y, ch, n = 8) {
+  const set = [ch, "✨", "🌷", "💜", "✿"];
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement("span"); s.className = "spark"; s.textContent = set[i % set.length];
+    s.style.left = x + "px"; s.style.top = y + "px";
+    s.style.setProperty("--x", (Math.random() * 240 - 120) + "px"); s.style.setProperty("--y", (Math.random() * -200 - 20) + "px");
+    document.body.appendChild(s); setTimeout(() => s.remove(), 1700);
+  }
+}
+for (let i = 0; i < 14; i++) {
+  const p = document.createElement("i"); p.className = "petal"; p.style.left = Math.random() * 100 + "%";
+  p.style.setProperty("--dx", (Math.random() * 160 - 80) + "px"); p.style.animationDuration = 12 + Math.random() * 12 + "s";
+  p.style.animationDelay = -Math.random() * 20 + "s"; $("#petals").appendChild(p);
+}
+
+/* ---------- music ---------- */
+/* Built-in "Happy Birthday" (traditional melody, public domain), played softly with the browser's own audio. */
+const F = { C4: 261.63, D4: 293.66, E4: 329.63, F4: 349.23, G4: 392, A4: 440, B4: 493.88, C5: 523.25, D5: 587.33, G5: 783.99 };
+const TUNE = [["G4",.75],["G4",.25],["A4",1],["G4",1],["C5",1],["B4",2],["G4",.75],["G4",.25],["A4",1],["G4",1],["D5",1],["C5",2],
+  ["G4",.75],["G4",.25],["G5",1],["E4",1],["C5",1],["B4",1],["A4",1],["F4",.75],["F4",.25],["E4",1],["C5",1],["D5",1],["C5",2]];
+const song = $("#song"), mbtn = $("#music");
+let ctx, oscs = [], timer, playing = false;
+function playTune() {
+  if (!playing) return;
+  const beat = .6; let t = ctx.currentTime + .1;
+  TUNE.forEach(([n, b]) => {
+    const o = ctx.createOscillator(), g = ctx.createGain(), len = b * beat;
+    o.type = "triangle"; o.frequency.value = F[n];
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(.16, t + .03); g.gain.exponentialRampToValueAtTime(.001, t + len * .95);
+    o.connect(g).connect(ctx.destination); o.start(t); o.stop(t + len); oscs.push(o); t += len;
+  });
+  timer = setTimeout(() => { oscs = []; playTune(); }, (t - ctx.currentTime + 1.5) * 1000);
+}
+function setMusic(on) {
+  if (on === playing) return;
+  playing = on;
+  if (MUSIC_FILE) { song.src = song.src || MUSIC_FILE; on ? song.play().catch(() => { playing = false; }) : song.pause(); }
+  else if (on) { ctx = ctx || new (window.AudioContext || window.webkitAudioContext)(); ctx.resume(); playTune(); }
+  else { clearTimeout(timer); oscs.forEach(o => { try { o.stop(); } catch (e) {} }); oscs = []; }
+  mbtn.textContent = "♪ Music: " + (playing ? "on" : "off"); mbtn.setAttribute("aria-pressed", playing);
+}
+mbtn.onclick = () => setMusic(!playing);
+</script>
+</body>
+</html>
